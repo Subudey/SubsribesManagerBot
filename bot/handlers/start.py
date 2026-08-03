@@ -2,13 +2,13 @@ from aiogram import Router, html, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from contextlib import suppress
+from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import TelegramBadRequest
 
 router = Router()
 
 
 def get_main_menu_keyboard() -> InlineKeyboardMarkup:
-    """Главная клавиатура"""
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -23,7 +23,6 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_back_to_menu_keyboard() -> InlineKeyboardMarkup:
-    """Универсальная кнопка Возврата в меню"""
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="◀️ Назад в меню", callback_data="back_to_main_menu")]
@@ -32,12 +31,13 @@ def get_back_to_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state: FSMContext):
     welcome_text = (
         f"Привет, {html.bold(message.from_user.full_name)}! 👋\n\n"
         f"Я твой личный менеджер подписок и регулярных расходов.\n"
         f"Управляй своими сервисами прямо из этого меню!"
     )
+    await state.clear()
     await message.answer(welcome_text, reply_markup=get_main_menu_keyboard())
 
 

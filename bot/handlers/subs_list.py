@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from sqlalchemy import select, delete
 
@@ -49,9 +50,10 @@ async def build_subs_list_payload(user_id: int):
 
 
 @router.callback_query(F.data == "list_subscriptions")
-async def list_subs_handler(callback: CallbackQuery):
+async def list_subs_handler(callback: CallbackQuery, state: FSMContext):
     text, keyboard = await build_subs_list_payload(callback.from_user.id)
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
+    await state.clear()
     await callback.answer()
 
 @router.callback_query(F.data.startswith("delete_sub_"))

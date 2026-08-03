@@ -1,9 +1,12 @@
 import asyncio
 import logging
+import os
+from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.types import BotCommand
 from aiogram.client.default import DefaultBotProperties
+
 
 from bot.handlers.subs_list import router as list_subs_router
 from bot.handlers.stats import router as stats_router
@@ -52,6 +55,9 @@ async def main():
     dp.include_router(stats_router)
 
     await setup_bot_metadata(bot)
+    await start_health_check()
+
+    await dp.start_polling(bot)
 
     notification_scheduler = NotificationScheduler(bot)
 
@@ -66,6 +72,20 @@ async def main():
 
     logging.info("Бот успешно запущен!")
     await dp.start_polling(bot)
+
+
+
+async def handle(request):
+    return web.Response(text="Bot is alive!")
+
+async def start_health_check():
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.environ.get("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 from aiogram import Router, html, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from contextlib import suppress
+from aiogram.exceptions import TelegramBadRequest
 
 router = Router()
 
@@ -47,4 +49,5 @@ async def back_to_menu_handler(callback: CallbackQuery):
         f"Управляй своими сервисами прямо из этого меню!"
     )
     await callback.message.edit_text(welcome_text, reply_markup=get_main_menu_keyboard())
-    await callback.answer()
+    with suppress(TelegramBadRequest):
+        await callback.answer()

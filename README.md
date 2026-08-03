@@ -1,4 +1,4 @@
-# 💳 Subscribes Manager Bot (В ТГ: @subscribes_manager_bot)
+# 💳 Subscribes Manager Bot
 
 > Telegram-бот для удобного учета личных подписок и регулярных расходов.
 
